@@ -15,6 +15,12 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
+function setAddress(){
+    var lat = localStorage.getItem("selectedLat");
+    var lng = localStorage.getItem("selectedLng");
+    ons.notification.alert('Latitude : '+lat+'<bry> Longtitude : '+lng);
+}
+
 function setIDtoFoodMenu(ID) {
     localStorage.setItem("selectedID", ID);
     document.querySelector('#myNavigator').pushPage('content/Food.html')
@@ -438,130 +444,46 @@ document.addEventListener('init', function (event) {
 
     if (page.id === "Address") {
         console.log("Address Page");
+        var lat;
+        var lng;
 
         //get Geolocation from Cordova
-
         var onSuccess = function(position) {
-            ons.notification.alert('Latitude: '          + position.coords.latitude          + '\n' +
-                  'Longitude: '         + position.coords.longitude       );  
-                //   + '\n' +);
-                //   'Altitude: '          + position.coords.altitude          + '\n' +
-                //   'Accuracy: '          + position.coords.accuracy          + '\n' +
-                //   'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                //   'Heading: '           + position.coords.heading           + '\n' +
-                //   'Speed: '             + position.coords.speed             + '\n' +
-                //   'Timestamp: '         + position.timestamp                + '\n');
+            lat = position.coords.latitude
+            lng =position.coords.longitude
+            mapboxgl.accessToken = 'pk.eyJ1IjoiYmx1ZWJpcmRseXJhc2UiLCJhIjoiY2sybGFkb3puMDUwdzNkcHIwMzVnenlnNSJ9.zkXOi-GQ7ZHW6bXY-cMYqg';
+            var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+            center: [lng, lat], // starting position [lng, lat]
+            zoom: 13 // starting zoom
+            });
+
+            var marker = new mapboxgl.Marker({
+                draggable: true
+                })
+                .setLngLat([lng, lat])
+                .addTo(map);
+                onDragEnd();
+                function onDragEnd() {
+                var lngLat = marker.getLngLat();
+                coordinates.style.display = 'block';
+                coordinates.innerHTML = 'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
+                localStorage.setItem("selectedLat", lngLat.lat);
+                localStorage.setItem("selectedLng", lngLat.lng );
+                }
+                 
+                marker.on('dragend', onDragEnd);
         }
-    
-        // onError Callback receives a PositionError object
-        //
+
         function onError(error) {
             ons.notification.alert('code: '    + error.code    + '\n' +
                   'message: ' + error.message + '\n');
         }
-    
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
-        //////////////////////////WATCH POSITION///////////////////////////////
-
-        // function onSuccess(position) {
-        //     var element = document.getElementById('geolocation');
-        //     element.innerHTML = 'Latitude: '  + position.coords.latitude      + '<br />' +
-        //                         'Longitude: ' + position.coords.longitude     + '<br />' +
-        //                         '<hr />'      + element.innerHTML;
-        // }
-    
-        // // onError Callback receives a PositionError object
-        // //
-        // function onError(error) {
-        //     alert('code: '    + error.code    + '\n' +
-        //           'message: ' + error.message + '\n');
-        // }
-    
-        // // Options: throw an error if no update is received every 30 seconds.
-        // //
-        // var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
-
-        ////MAP/////////
 
         
-var Latitude = undefined;
-var Longitude = undefined;
-
-// Get geo coordinates
-
-function getMapLocation() {
-
-    navigator.geolocation.getCurrentPosition
-    (onMapSuccess, onMapError, { enableHighAccuracy: true });
-}
-
-// Success callback for get geo coordinates
-
-var onMapSuccess = function (position) {
-
-    Latitude = position.coords.latitude;
-    Longitude = position.coords.longitude;
-
-    getMap(Latitude, Longitude);
-
-}
-
-// Get map by using coordinates
-
-function getMap(latitude, longitude) {
-
-    var mapOptions = {
-        center: new google.maps.LatLng(0, 0),
-        zoom: 1,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-
-    map = new google.maps.Map
-    (document.getElementById("map"), mapOptions);
-
-
-    var latLong = new google.maps.LatLng(latitude, longitude);
-
-    var marker = new google.maps.Marker({
-        position: latLong
-    });
-
-    marker.setMap(map);
-    map.setZoom(15);
-    map.setCenter(marker.getPosition());
-}
-
-// Success callback for watching your changing position
-
-var onMapWatchSuccess = function (position) {
-
-    var updatedLatitude = position.coords.latitude;
-    var updatedLongitude = position.coords.longitude;
-
-    if (updatedLatitude != Latitude && updatedLongitude != Longitude) {
-
-        Latitude = updatedLatitude;
-        Longitude = updatedLongitude;
-
-        getMap(updatedLatitude, updatedLongitude);
-    }
-}
-
-// Error callback
-
-function onMapError(error) {
-    console.log('code: ' + error.code + '\n' +
-        'message: ' + error.message + '\n');
-}
-
-// Watch your changing position
-
-function watchMapPosition() {
-
-    return navigator.geolocation.watchPosition
-    (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
-}
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
     }
 
