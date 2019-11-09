@@ -15,10 +15,30 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
+function payment(){
+    document.querySelector('#myNavigator').pushPage('content/address.html');
+}
+
 function setAddress(){
     var lat = localStorage.getItem("selectedLat");
     var lng = localStorage.getItem("selectedLng");
-    ons.notification.alert('Latitude : '+lat+'<bry> Longtitude : '+lng);
+    if(item.length != 0){
+    ons.notification.confirm({
+        message: 'Set delivery destination to Latitude : '+lat+'<bry> Longtitude : '+lng+' ?',
+        callback: function (answer) {
+            if (answer == 1) {
+                ons.notification.alert('Your order is on the way');
+                item = [];
+                document.querySelector('#myNavigator').resetToPage('splitter.html');
+
+            }
+        }
+    });
+    }else{
+        ons.notification.alert('Set delivery destination to Latitude : '+lat+'<bry> Longtitude : '+lng);
+    }
+
+    
 }
 
 function setIDtoFoodMenu(ID) {
@@ -228,6 +248,9 @@ document.addEventListener('init', function (event) {
             document.querySelector('#myNavigator').pushPage('content/address.html');
             $("#sidemenu")[0].close();
         });
+
+
+
 
 
     }
