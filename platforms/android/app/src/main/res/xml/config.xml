@@ -23,7 +23,7 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <universal-links>
-        <host name="DYNAMIC_LINK_DOMAIN" scheme="https" />
+        <host name="alpacafood.page.link/6BG2" scheme="https" />
         <host name="alpaca-one-page.firebaseapp.com" scheme="https">
             <path url="/__/auth/callback" />
         </host>
