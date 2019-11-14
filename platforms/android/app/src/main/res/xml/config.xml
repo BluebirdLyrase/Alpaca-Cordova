@@ -24,7 +24,7 @@
     <allow-intent href="geo:*" />
     <universal-links>
         <host name="DYNAMIC_LINK_DOMAIN" scheme="https" />
-        <host name="alpaca-one-page.firebaseio.com" scheme="https">
+        <host name="alpaca-one-page.firebaseapp.com" scheme="https">
             <path url="/__/auth/callback" />
         </host>
     </universal-links>
